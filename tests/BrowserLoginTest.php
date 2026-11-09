@@ -119,4 +119,15 @@ class BrowserLoginTest extends TestCase
         $this->assertNull(session(NineManager::SESSION_TOKENS));
         $this->assertStringContainsString('token=rt_x', $this->tenant->callsTo(FakeTenant::ISSUER . '/oauth/revoke')[0]['body']);
     }
+
+    public function testLogoutStillSignsOutWhenRevocationFails(): void
+    {
+        $this->tenant->revokeStatus = 503;
+        $this->withSession([NineManager::SESSION_TOKENS => ['access_token' => 'a', 'id_token' => null, 'refresh_token' => 'rt_x', 'expires_at' => time() + 600, 'scope' => '', 'return_to' => null]]);
+
+        $response = $this->get('/nine/logout');
+        $this->assertStringStartsWith(FakeTenant::ISSUER . '/oauth/logout?', (string) $response->headers->get('Location'));
+        $this->assertNull(session(NineManager::SESSION_TOKENS));
+        $this->assertCount(1, $this->tenant->callsTo(FakeTenant::ISSUER . '/oauth/revoke'));
+    }
 }

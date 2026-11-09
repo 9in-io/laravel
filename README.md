@@ -14,7 +14,7 @@ access tokens, and receive verified webhooks.
 - **`nine` guard and middleware**, scope checks, and a `Nine` facade.
 - **Webhooks** at `/nine/webhook`, dispatched as Laravel events.
 
-Requires PHP 8.1+ and Laravel 10, 11 or 12.
+Requires PHP 8.1+ and Laravel 10, 11, 12 or 13 (Laravel 13 itself needs PHP 8.3+).
 
 ```bash
 composer require 9in/laravel:^3.0

@@ -26,13 +26,13 @@
     ],
     "require": {
         "php": ">=8.1",
-        "laravel/framework": "^10.0 || ^11.0 || ^12.0",
+        "laravel/framework": "^10.0 || ^11.0 || ^12.0 || ^13.0",
         "9in/php-sdk": "^3.0",
         "9in/laravel-events": "^2.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.11",
-        "orchestra/testbench": "^8.0 || ^9.0 || ^10.0",
+        "orchestra/testbench": "^8.0 || ^9.0 || ^10.0 || ^11.0",
         "phpunit/phpunit": "^10.5 || ^11.0"
     },
     "autoload": {

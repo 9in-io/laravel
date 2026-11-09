@@ -26,6 +26,9 @@ class FakeTenant implements HttpClientInterface
     /** @var int */
     public $tokenStatus = 200;
 
+    /** @var int status of the revocation endpoint */
+    public $revokeStatus = 200;
+
     /** @var callable|null token => introspection answer (default: active with the token's claims) */
     public $introspection;
 
@@ -69,7 +72,7 @@ class FakeTenant implements HttpClientInterface
                     'scope'         => 'openid profile email offline_access',
                 ], $this->tokenResponse), $this->tokenStatus);
             case 'POST ' . self::ISSUER . '/oauth/revoke':
-                return new Response(200, [], '');
+                return new Response($this->revokeStatus, [], $this->revokeStatus === 200 ? '' : '{"error":"temporarily_unavailable"}');
             case 'POST ' . self::ISSUER . '/oauth/introspect':
                 parse_str((string) $body, $form);
                 $this->introspected[] = $form['token'];

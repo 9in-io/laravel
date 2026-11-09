@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 3.1.0 - 2026-11-09
+
+* Laravel 13 support (`laravel/framework` `^10.0 || ^11.0 || ^12.0 || ^13.0`; Orchestra Testbench 11 for
+  development). No code changes were needed: the full test suite passes on Laravel 12 and 13 without
+  deprecations, and the live end-to-end suite against 9in passes on Laravel 13.
+
 ## 3.0.1 - 2026-11-09
 
 Same code as 3.0.0, released again under a new version because the 3.0.0 tag was moved to a
