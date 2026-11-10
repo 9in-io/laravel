@@ -1,11 +1,33 @@
-# Migrating from `ssofy/laravel` 2.x to `9in/laravel` 3.x
+# Migrating
+
+## 3.x → 4.x
+
+4.0 moves to `9in/php-sdk` 4 and `9in/laravel-events` 3, which read 9in's snake_case payloads
+(the 9in release of 2026-11-10). Upgrade together with 9in.
+
+```bash
+composer require 9in/laravel:^4.0 -W
+```
+
+- Webhook events: `$event->type()`, `createdAt()` and `userId()` keep working; they now read
+  `event`, `created_at` and `data.user.id`. Code that reads `$event->event['type']`,
+  `['createdAt']` or `['data']['userId']` directly must use `['event']`, `['created_at']` and
+  `['data']['user']['id']`. `token.revoked` data is `token_type` and `client_id`.
+- `Nine::management()`: send and read the API's snake_case names (`email_verified`,
+  `phone_number`, `phone_number_verified`, `password_hash`; `created_at`, `last_login_at` as
+  ISO 8601 strings); the old names are refused. `findUser('phone_number', …)` replaces
+  `findUser('phone', …)`. The full table is in
+  [`9in/php-sdk`'s MIGRATION.md](https://github.com/9in-io/php-sdk/blob/master/MIGRATION.md).
+- Hybrid token verification on `/nine/webhook` reads the new events; nothing to change.
+
+## From `ssofy/laravel` 2.x to `9in/laravel` 3.x
 
 SSOfy is now [9in](https://9in.io). 3.0 is a new major version under a new package name
 that uses standard OpenID Connect and verifies tokens locally.
 
 **Upgrading is required to use 9in.** `ssofy/laravel` 2.x only talks to the SSOfy service (the signed `/v1/authenticated/*` API and SSOfy-specific login URLs). That service has shut down (ssofy.com has lapsed), and 9in does not serve the SSOfy v1 protocol, so 2.x does not work against 9in. The old versions stay published but are no longer maintained. Move to 3.x as part of moving the app to 9in.
 
-## 1. Packages
+### 1. Packages
 
 ```bash
 composer remove ssofy/laravel ssofy/laravel-events ssofy/php-sdk
@@ -15,7 +37,7 @@ composer require 9in/laravel:^3.0
 PHP 8.1+ and Laravel 10–13 are required. Namespace `SSOfy\Laravel\…` → `Nine\Laravel\…`;
 provider `Nine\Laravel\NineServiceProvider` and facade `Nine` are auto-discovered.
 
-## 2. Configuration
+### 2. Configuration
 
 Publish `config/nine.php` (`php artisan vendor:publish --tag=nine:config`) and delete
 `config/ssofy.php`.
@@ -33,7 +55,7 @@ Publish `config/nine.php` (`php artisan vendor:publish --tag=nine:config`) and d
 | `cache.store`, `cache.ttl` (`SSOFY_CACHE_*`) | `cache.store` (`NINE_CACHE_DRIVER`) for signing keys; no token cache |
 | | New: `webhook.secret` (`NINE_WEBHOOK_SECRET`), `routes.prefix`, `management.*` |
 
-## 3. Routes
+### 3. Routes
 
 | 2.x | 3.x |
 |---|---|
@@ -45,7 +67,7 @@ Publish `config/nine.php` (`php artisan vendor:publish --tag=nine:config`) and d
 
 Set `NINE_ROUTE_PREFIX=sso` to keep `/sso/*` URLs.
 
-## 4. Guard, provider and middleware
+### 4. Guard, provider and middleware
 
 | 2.x | 3.x |
 |---|---|
@@ -57,7 +79,7 @@ Set `NINE_ROUTE_PREFIX=sso` to keep `/sso/*` URLs.
 | Unauthenticated: `vendor.ssofy.error` view | 401 JSON with `WWW-Authenticate`; `nine:redirect` sends browsers to the login |
 | | `nine.scope:a,b` for scope checks |
 
-## 5. Facade and events
+### 5. Facade and events
 
 | 2.x | 3.x |
 |---|---|
@@ -69,7 +91,7 @@ Set `NINE_ROUTE_PREFIX=sso` to keep `/sso/*` URLs.
 | `TokenDeleted` listener (token cache invalidation) | `/nine/webhook` evicts cached token answers on `token.revoked`, `session.revoked` and `user.*` (hybrid mode) |
 | | Webhooks dispatch `Nine\Laravel\Events\*` |
 
-## 6. Database
+### 6. Database
 
 2.x shipped `add_missing_columns_to_users_table` and `create_user_social_links_table`
 migrations that the client did not use. 3.x ships none. Keep or drop those tables as you

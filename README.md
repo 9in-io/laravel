@@ -17,7 +17,7 @@ access tokens, and receive verified webhooks.
 Requires PHP 8.1+ and Laravel 10, 11, 12 or 13 (Laravel 13 itself needs PHP 8.3+).
 
 ```bash
-composer require 9in/laravel:^3.0
+composer require 9in/laravel:^4.0
 ```
 
 Upgrading from `ssofy/laravel` 2.x? Read [MIGRATION.md](MIGRATION.md).
@@ -122,10 +122,13 @@ dispatched as [`9in/laravel-events`](https://github.com/9in-io/laravel-events) c
 use Nine\Laravel\Events\UserCreated;
 
 Event::listen(UserCreated::class, function (UserCreated $event) {
-    $user = $event->user();       // 9in user snapshot
+    $user = $event->user();       // the 9in user (Management API shape: snake_case, ISO 8601 times)
     // $event->id() is stable across retries: use it to ignore duplicates
 });
 ```
+
+The raw payload (`$event->event`) is `{id, event, created_at, tenant, environment, data}`, and
+`data.user` is the user the event is about.
 
 Each event is dispatched **once**: retries and redeliveries of a processed event id are
 answered 204 without dispatching again, and a retry that arrives while the first delivery is
@@ -141,7 +144,7 @@ To receive webhooks on a different route, use the `nine.webhook` middleware ther
 ```php
 use Nine\Laravel\Facades\Nine;
 
-Nine::management()->createUser(['email' => 'jane@acme.com', 'emailVerified' => true]);
+Nine::management()->createUser(['email' => 'jane@acme.com', 'email_verified' => true]);   // the API's snake_case names
 Nine::management()->revokeUserSessions($userId);
 $link = Nine::management()->createLoginLink($userId, ['returnTo' => url('/nine/callback')]);
 ```

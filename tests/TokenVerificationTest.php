@@ -24,7 +24,7 @@ class TokenVerificationTest extends TestCase
 
     private function webhook(array $event)
     {
-        $body = json_encode($event + ['id' => 'evt_' . bin2hex(random_bytes(4)), 'createdAt' => '2026-11-09T10:00:00Z']);
+        $body = json_encode($event + ['id' => 'evt_' . bin2hex(random_bytes(4)), 'created_at' => '2026-11-09T10:00:00.000Z']);
         return $this->call('POST', '/nine/webhook', [], [], [], [
             'CONTENT_TYPE'       => 'application/json',
             'HTTP_9IN_SIGNATURE' => Signature::sign('whsec_test', 'POST', '/nine/webhook', $body),
@@ -51,7 +51,7 @@ class TokenVerificationTest extends TestCase
 
         $revoked[] = $token;
         $this->api($token)->assertOk(); // still cached: 9in has not told us yet
-        $this->webhook(['type' => 'token.revoked', 'data' => ['type' => 'access_token', 'jti' => 'jti_live', 'clientId' => 'app_web', 'userId' => 'usr_1']])->assertStatus(204);
+        $this->webhook(['event' => 'token.revoked', 'data' => ['token_type' => 'access_token', 'jti' => 'jti_live', 'client_id' => 'app_web', 'user' => ['id' => 'usr_1']]])->assertStatus(204);
         $this->api($token)->assertStatus(401);
         $this->assertCount(2, $this->tenant->introspected);
     }
@@ -63,8 +63,8 @@ class TokenVerificationTest extends TestCase
         $this->api($a)->assertOk();
         $this->api($b)->assertOk();
 
-        $this->webhook(['type' => 'session.revoked', 'data' => ['sid' => 'sid_a', 'userId' => 'usr_1']])->assertStatus(204);
-        $this->webhook(['type' => 'user.deleted', 'data' => ['userId' => 'usr_2', 'user' => null]])->assertStatus(204);
+        $this->webhook(['event' => 'session.revoked', 'data' => ['sid' => 'sid_a', 'user' => ['id' => 'usr_1']]])->assertStatus(204);
+        $this->webhook(['event' => 'user.deleted', 'data' => ['user' => ['id' => 'usr_2']]])->assertStatus(204);
         $this->api($a)->assertOk();
         $this->api($b)->assertOk();
         $this->assertCount(4, $this->tenant->introspected);
@@ -89,7 +89,7 @@ class TokenVerificationTest extends TestCase
         $this->api('9in_at_opaque')->assertStatus(401);
         $this->assertSame([], $this->tenant->introspected);
         // Webhooks still work and evict nothing.
-        $this->webhook(['type' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
+        $this->webhook(['event' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
     }
 
     public function testIntrospectMode(): void
@@ -131,6 +131,6 @@ class TokenVerificationTest extends TestCase
             {
             }
         });
-        $this->webhook(['type' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
+        $this->webhook(['event' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
     }
 }
