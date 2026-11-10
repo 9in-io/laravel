@@ -51,7 +51,7 @@ class TokenVerificationTest extends TestCase
 
         $revoked[] = $token;
         $this->api($token)->assertOk(); // still cached: 9in has not told us yet
-        $this->webhook(['event' => 'token.revoked', 'data' => ['token_type' => 'access_token', 'jti' => 'jti_live', 'client_id' => 'app_web', 'user' => ['id' => 'usr_1']]])->assertStatus(204);
+        $this->webhook(['event_type' => 'token.revoked', 'data' => ['token_type' => 'access_token', 'jti' => 'jti_live', 'client_id' => 'app_web', 'user' => ['id' => 'usr_1']]])->assertStatus(204);
         $this->api($token)->assertStatus(401);
         $this->assertCount(2, $this->tenant->introspected);
     }
@@ -63,8 +63,8 @@ class TokenVerificationTest extends TestCase
         $this->api($a)->assertOk();
         $this->api($b)->assertOk();
 
-        $this->webhook(['event' => 'session.revoked', 'data' => ['sid' => 'sid_a', 'user' => ['id' => 'usr_1']]])->assertStatus(204);
-        $this->webhook(['event' => 'user.deleted', 'data' => ['user' => ['id' => 'usr_2']]])->assertStatus(204);
+        $this->webhook(['event_type' => 'session.revoked', 'data' => ['sid' => 'sid_a', 'user' => ['id' => 'usr_1']]])->assertStatus(204);
+        $this->webhook(['event_type' => 'user.deleted', 'data' => ['user' => ['id' => 'usr_2']]])->assertStatus(204);
         $this->api($a)->assertOk();
         $this->api($b)->assertOk();
         $this->assertCount(4, $this->tenant->introspected);
@@ -89,7 +89,7 @@ class TokenVerificationTest extends TestCase
         $this->api('9in_at_opaque')->assertStatus(401);
         $this->assertSame([], $this->tenant->introspected);
         // Webhooks still work and evict nothing.
-        $this->webhook(['event' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
+        $this->webhook(['event_type' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
     }
 
     public function testIntrospectMode(): void
@@ -131,6 +131,6 @@ class TokenVerificationTest extends TestCase
             {
             }
         });
-        $this->webhook(['event' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
+        $this->webhook(['event_type' => 'session.revoked', 'data' => ['sid' => 'sid_1']])->assertStatus(204);
     }
 }

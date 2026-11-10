@@ -5,7 +5,7 @@
 Breaking: requires `9in/php-sdk` ^4.0 and `9in/laravel-events` ^3.0, which read 9in's snake_case
 webhooks and Management API (the 9in release of 2026-11-10). See [MIGRATION.md](MIGRATION.md).
 
-* `/nine/webhook` dispatches events from `{id, event, created_at, tenant, environment, data}`;
+* `/nine/webhook` dispatches events from `{id, event_type, created_at, tenant, environment, data}`;
   `userId()` comes from `data.user.id`.
 * `Nine::management()` takes and returns the API's snake_case names.
 

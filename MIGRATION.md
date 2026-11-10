@@ -10,8 +10,8 @@ composer require 9in/laravel:^4.0 -W
 ```
 
 - Webhook events: `$event->type()`, `createdAt()` and `userId()` keep working; they now read
-  `event`, `created_at` and `data.user.id`. Code that reads `$event->event['type']`,
-  `['createdAt']` or `['data']['userId']` directly must use `['event']`, `['created_at']` and
+  `event_type`, `created_at` and `data.user.id`. Code that reads `$event->event['type']`,
+  `['createdAt']` or `['data']['userId']` directly must use `['event_type']`, `['created_at']` and
   `['data']['user']['id']`. `token.revoked` data is `token_type` and `client_id`.
 - `Nine::management()`: send and read the API's snake_case names (`email_verified`,
   `phone_number`, `phone_number_verified`, `password_hash`; `created_at`, `last_login_at` as

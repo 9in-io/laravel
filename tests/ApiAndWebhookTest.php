@@ -58,7 +58,7 @@ class ApiAndWebhookTest extends TestCase
     public function testVerifiedWebhooksAreDispatched(): void
     {
         Event::fake([UserCreated::class, EventReceived::class]);
-        $body = json_encode(['id' => 'evt_1', 'event' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'tenant' => 'tnt_1', 'environment' => 'production', 'data' => ['user' => ['id' => 'usr_9', 'email' => 'new@acme.com']]]);
+        $body = json_encode(['id' => 'evt_1', 'event_type' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'tenant' => 'tnt_1', 'environment' => 'production', 'data' => ['user' => ['id' => 'usr_9', 'email' => 'new@acme.com']]]);
 
         $this->webhook($body)->assertStatus(204);
 
@@ -74,7 +74,7 @@ class ApiAndWebhookTest extends TestCase
         Event::listen(UserCreated::class, function () use (&$count) {
             $count++;
         });
-        $body = json_encode(['id' => 'evt_dup', 'event' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => ['user' => ['id' => 'usr_9']]]);
+        $body = json_encode(['id' => 'evt_dup', 'event_type' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => ['user' => ['id' => 'usr_9']]]);
 
         $this->webhook($body)->assertStatus(204);
         $this->webhook($body)->assertStatus(204);
@@ -90,7 +90,7 @@ class ApiAndWebhookTest extends TestCase
                 throw new \RuntimeException('db down');
             }
         });
-        $body = json_encode(['id' => 'evt_retry', 'event' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => []]);
+        $body = json_encode(['id' => 'evt_retry', 'event_type' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => []]);
 
         try {
             $this->webhook($body);
@@ -105,7 +105,7 @@ class ApiAndWebhookTest extends TestCase
     public function testConcurrentDeliveriesGet409(): void
     {
         $this->app->make(\Nine\Laravel\NineManager::class)->cache()->add('nine:webhook:evt_busy', 'processing', 300);
-        $body = json_encode(['id' => 'evt_busy', 'event' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => []]);
+        $body = json_encode(['id' => 'evt_busy', 'event_type' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => []]);
         $this->webhook($body)->assertStatus(409)->assertExactJson(['error' => 'in_progress']);
     }
 
@@ -116,7 +116,7 @@ class ApiAndWebhookTest extends TestCase
         Event::listen(UserCreated::class, function () use (&$count) {
             $count++;
         });
-        $body = json_encode(['id' => 'evt_twice', 'event' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => []]);
+        $body = json_encode(['id' => 'evt_twice', 'event_type' => 'user.created', 'created_at' => '2026-11-09T10:00:00.000Z', 'data' => []]);
         $this->webhook($body)->assertStatus(204);
         $this->webhook($body)->assertStatus(204);
         $this->assertSame(2, $count);
@@ -136,7 +136,7 @@ class ApiAndWebhookTest extends TestCase
     public function testUnsignedOrStaleWebhooksAreRejected(): void
     {
         Event::fake([UserCreated::class, EventReceived::class]);
-        $body = json_encode(['id' => 'evt_1', 'event' => 'user.created', 'data' => []]);
+        $body = json_encode(['id' => 'evt_1', 'event_type' => 'user.created', 'data' => []]);
         $this->webhook($body, null)->assertStatus(401)->assertExactJson(['error' => 'invalid_signature']);
         $this->webhook($body, 'other-secret')->assertStatus(401);
         $this->webhook($body, 'whsec_test', time() - 3600)->assertStatus(401);

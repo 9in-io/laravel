@@ -127,7 +127,7 @@ Event::listen(UserCreated::class, function (UserCreated $event) {
 });
 ```
 
-The raw payload (`$event->event`) is `{id, event, created_at, tenant, environment, data}`, and
+The raw payload (`$event->event`) is `{id, event_type, created_at, tenant, environment, data}`, and
 `data.user` is the user the event is about.
 
 Each event is dispatched **once**: retries and redeliveries of a processed event id are
