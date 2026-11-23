@@ -20,8 +20,6 @@ Requires PHP 8.1+ and Laravel 10, 11, 12 or 13 (Laravel 13 itself needs PHP 8.3+
 composer require 9in/laravel:^4.0
 ```
 
-Upgrading from `ssofy/laravel` 2.x? Read [MIGRATION.md](MIGRATION.md).
-
 ## Setup
 
 Create an application in the 9in console (Applications → New → Regular web app) with the
@@ -35,8 +33,7 @@ NINE_CLIENT_SECRET=…
 # NINE_AUDIENCE=https://api.acme.com     # access tokens for your own API
 ```
 
-The old `SSOFY_URL`, `SSOFY_CLIENT_ID` and `SSOFY_CLIENT_SECRET` are still read when the
-`NINE_*` names are not set. The issuer must use `https://`; plain http is accepted for
+The issuer must use `https://`; plain http is accepted for
 `localhost` and `*.localhost` (set `NINE_ALLOW_INSECURE_ISSUER=true` for other development
 hosts). Publish the config with
 `php artisan vendor:publish --tag=nine:config` to change routes, scopes or caching.
@@ -164,4 +161,4 @@ composer test
 
 ## License
 
-The MIT License (MIT). See [LICENSE](LICENSE). 9in and SSOfy are by [Cubelet Ltd](https://cubelet.co.uk).
+The MIT License (MIT). See [LICENSE](LICENSE). 9in is by [Cubelet Ltd](https://cubelet.co.uk).

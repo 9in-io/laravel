@@ -8,13 +8,13 @@ return [
     |--------------------------------------------------------------------------
     |
     | Your 9in tenant (or custom login domain) and the application registered for
-    | this site in the console. Old SSOFY_* variables are still read as fallbacks.
+    | this site in the console.
     |
     */
 
-    'issuer'        => env('NINE_ISSUER', env('SSOFY_URL')),
-    'client_id'     => env('NINE_CLIENT_ID', env('SSOFY_CLIENT_ID')),
-    'client_secret' => env('NINE_CLIENT_SECRET', env('SSOFY_CLIENT_SECRET')),
+    'issuer'        => env('NINE_ISSUER'),
+    'client_id'     => env('NINE_CLIENT_ID'),
+    'client_secret' => env('NINE_CLIENT_SECRET'),
 
     // Absolute, or relative to APP_URL. Register it as a redirect URL of the application.
     'redirect_uri' => env('NINE_REDIRECT_URI', '/nine/callback'),
@@ -94,7 +94,7 @@ return [
     */
 
     'webhook' => [
-        'secret'          => env('NINE_WEBHOOK_SECRET', env('SSOFY_WEBHOOK_SECRET')),
+        'secret'          => env('NINE_WEBHOOK_SECRET'),
         'previous_secret' => env('NINE_WEBHOOK_SECRET_PREVIOUS'),
         'tolerance'       => 300,
 
@@ -115,7 +115,7 @@ return [
     */
 
     'cache' => [
-        'store' => env('NINE_CACHE_DRIVER', env('SSOFY_CACHE_DRIVER')),
+        'store' => env('NINE_CACHE_DRIVER'),
     ],
 
     /*

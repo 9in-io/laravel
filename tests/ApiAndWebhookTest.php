@@ -144,17 +144,19 @@ class ApiAndWebhookTest extends TestCase
         Event::assertNotDispatched(EventReceived::class);
     }
 
-    public function testLegacyEnvironmentFallback(): void
+    public function testReadsOnlyNineVariables(): void
     {
-        putenv('SSOFY_URL=https://login.legacy.test');
-        putenv('SSOFY_CLIENT_ID=legacy_app');
+        putenv('SSOFY_URL=https://login.old.test');
+        putenv('SSOFY_CLIENT_ID=old_app');
+        putenv('NINE_CLIENT_ID=app_1');
         try {
             $config = require __DIR__ . '/../config/nine.php';
-            $this->assertSame('https://login.legacy.test', $config['issuer']);
-            $this->assertSame('legacy_app', $config['client_id']);
+            $this->assertNull($config['issuer']);
+            $this->assertSame('app_1', $config['client_id']);
         } finally {
             putenv('SSOFY_URL');
             putenv('SSOFY_CLIENT_ID');
+            putenv('NINE_CLIENT_ID');
         }
     }
 }

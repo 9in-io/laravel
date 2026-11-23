@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 5.0.0 - 2026-11-23
+
+Breaking: SSOfy is gone, and so is what this package kept for it. See [MIGRATION.md](MIGRATION.md).
+
+* `SSOFY_URL`, `SSOFY_CLIENT_ID`, `SSOFY_CLIENT_SECRET`, `SSOFY_WEBHOOK_SECRET` and
+  `SSOFY_CACHE_DRIVER` are no longer read; use the `NINE_*` names.
+* Requires `9in/php-sdk` ^5.0.
+
 ## 4.0.0 - 2026-11-10
 
 Breaking: requires `9in/php-sdk` ^4.0 and `9in/laravel-events` ^3.0, which read 9in's snake_case
